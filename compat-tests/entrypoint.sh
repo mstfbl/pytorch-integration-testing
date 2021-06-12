@@ -6,7 +6,9 @@ set -eou pipefail
 
 (
     set -x
-    python -u run_test.py --continue-through-error -v
+    # Skip certain unit tests that depend on the existance of a sister `build` folder to the `test` folder. As we're
+    # not building PyTorch from source, the `build` folder doesn't exist.
+    python -u run_test.py --continue-through-error -v -x test_binary_ufuncs test_jit test_linalg test_quantization test_spectral_ops test_jit_profiling test_jit_legacy test_openmp distributed/rpc/test_tensorpipe_agent test_fx
 )
 
 (

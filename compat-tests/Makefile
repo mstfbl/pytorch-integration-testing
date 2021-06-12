@@ -2,8 +2,7 @@ SHELL=/usr/bin/env bash
 
 BASE_IMAGE      ?= ubuntu:14.04
 BASE            ?= ubuntu-base
-PYTORCH_REF     ?= master
-PYTORCH_CHANNEL ?= pytorch-test
+PYTORCH_REF     ?= lts/release/1.8
 BUILD_PROGRESS  ?=
 
 # We designate IN_CI=1 to have the runner generate xml reports
@@ -13,9 +12,8 @@ DOCKER_BUILD = DOCKER_BUILDKIT=1 docker build \
 	--build-arg BASE_IMAGE=$(BASE_IMAGE) \
 	--build-arg BASE=$(BASE) \
 	--build-arg PYTORCH_REF=$(PYTORCH_REF) \
-	--build-arg PYTORCH_CHANNEL=$(PYTORCH_CHANNEL) \
 	.
-DOCKER_RUN   = set -o pipefail; docker run --rm -it -e IN_CI=1 -w /pytorch/test -v "$(PWD)/test-reports:/pytorch/test/test-reports" compat-test:$@
+DOCKER_RUN   = set -o pipefail; docker run --rm -i -e IN_CI=1 -w /pytorch/test -v "$(PWD)/test-reports:/pytorch/test/test-reports" compat-test:$@
 
 .PHONY: ubuntu-16.04
 ubuntu-16.04: BASE_IMAGE := ubuntu:16.04

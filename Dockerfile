@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04 as base
+FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04 as base
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && apt-get install -y \
         build-essential \
@@ -10,12 +10,12 @@ RUN apt-get update && apt-get install -y \
 RUN curl -fL -q -O https://bootstrap.pypa.io/get-pip.py && \
         python3 get-pip.py && \
         rm get-pip.py
-ARG PYTORCH_DOWNLOAD_LINK=https://download.pytorch.org/whl/test/cu101/torch_test.html
+ARG PYTORCH_DOWNLOAD_LINK=https://download.pytorch.org/whl/lts/1.8/torch_lts.html
 RUN pip install \
-        torch \
-        torchaudio \
-        torchvision \
-        torchtext \
+        torch==1.8.1+cu111 \
+        torchvision==0.9.1+cu111 \
+        torchaudio==0.8.1 \
+        torchtext==0.9.1 \
         -f ${PYTORCH_DOWNLOAD_LINK}
 
 FROM base as pyro

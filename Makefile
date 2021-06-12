@@ -8,11 +8,11 @@ ifeq ($(GPU_TEST), $(GPU_PROGRAM))
 	GPU_FLAG           = --gpus all
 endif
 
-PYTORCH_DOWNLOAD_LINK ?= https://download.pytorch.org/whl/test/cu101/torch_test.html
+PYTORCH_DOWNLOAD_LINK ?= https://download.pytorch.org/whl/lts/1.8/torch_lts.html
 # Used by CI to do plain buildkit progress
 BUILD_PROGRESS        ?=
 DOCKER_BUILD           = cat Dockerfile | DOCKER_BUILDKIT=1 docker build --target $@ $(BUILD_PROGRESS) --build-arg "PYTORCH_DOWNLOAD_LINK=$(PYTORCH_DOWNLOAD_LINK)" -t pytorch/integration-testing:$@ -
-DOCKER_RUN             = set -o pipefail; docker run --rm -it $(GPU_FLAG) --shm-size 8G -v "$(PWD)/output:/output" pytorch/integration-testing:$@
+DOCKER_RUN             = set -o pipefail; docker run --rm -i $(GPU_FLAG) --shm-size 8G -v "$(PWD)/output:/output" pytorch/integration-testing:$@
 CHOWN_TO_USER          = docker run --rm -v "$(PWD)":/v -w /v alpine chown -R "$(shell id -u):$(shell id -g)" .
 
 

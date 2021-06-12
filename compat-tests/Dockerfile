@@ -1,6 +1,6 @@
 ARG BASE
 ARG BASE_IMAGE=ubuntu:14.04
-ARG PYTORCH_REF=master
+ARG PYTORCH_REF=lts/release/1.8
 
 FROM ${BASE_IMAGE} as debian-base
 RUN apt-get update && apt-get install -y build-essential ninja-build curl
@@ -19,7 +19,7 @@ RUN yum install -y \
 ENV PATH /opt/rh/devtoolset-7/root/usr/bin/:${PATH}
 
 FROM alpine:3 as pytorch-clone
-ARG PYTORCH_REF=master
+ARG PYTORCH_REF=lts/release/1.8
 RUN apk -U add --no-cache git
 RUN git clone https://github.com/pytorch/pytorch.git /pytorch
 RUN git -C /pytorch checkout ${PYTORCH_REF} && git -C /pytorch submodule update --init --recursive
@@ -29,18 +29,26 @@ RUN curl -fsSL -o install_conda.sh https://repo.continuum.io/miniconda/Miniconda
 RUN sh install_conda.sh -b -p /opt/conda
 ENV PATH /opt/conda/bin:$PATH
 COPY --from=pytorch-clone /pytorch /pytorch
+RUN python -m pip install torch==1.8.1+cpu -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
 RUN conda install -c pytorch-test \
-        cpuonly \
-        future \
-        hypothesis \
-        ninja \
+        pytest \
+        runipy \
+        gitpython \
+        requests \
+        astunparse \
         numpy \
-        pillow \
-        pytorch \
+        ninja \
         pyyaml \
-        psutil \
-        protobuf \
-        six
+        mkl \
+        mkl-include \
+        setuptools \
+        cmake \
+        cffi \
+        typing_extensions \
+        future \
+        six \
+        dataclasses \
+        hypothesis
 RUN conda install -c conda-forge unittest-xml-reporting
 COPY entrypoint.sh /entrypoint.sh
 WORKDIR /pytorch/test
